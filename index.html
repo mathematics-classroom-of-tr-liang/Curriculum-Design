@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教案大解剖！特教教案結構順序挑戰</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .drag-over {
+            border-color: #3b82f6 !important;
+            background-color: #eff6ff !important;
+            transform: scale(1.02);
+        }
+        /* Custom scrollbar for card pool and modals */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Touch card selected highlight pulse */
+        .card-selected {
+            ring: 3px;
+            ring-color: #6366f1;
+            background-color: #eef2ff !important;
+            border-color: #6366f1 !important;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Navigation / Header -->
+    <header class="bg-gradient-to-r from-indigo-700 via-blue-600 to-teal-600 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-col md:flex-row justify-between items-center gap-2.5">
+            <div class="flex items-center space-x-2.5 sm:space-x-3 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-2.5">
+                    <div class="p-2 bg-white/20 backdrop-blur-md rounded-lg text-yellow-300 text-xl sm:text-2xl shrink-0">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-2xl font-black tracking-wide leading-tight">教案大解剖！特教教案結構順序挑戰</h1>
+                        <p class="text-[11px] sm:text-xs text-indigo-100 opacity-90">清華大學特教系《教材教法與教案撰寫》微型互動工作坊</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Control / Status Bar (Flexible wrapping for Mobile) -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-between md:justify-end">
+                <!-- Mode Switch -->
+                <div class="bg-indigo-900/40 p-1 rounded-lg flex text-xs font-semibold shrink-0">
+                    <button id="mode-challenge" onclick="setMode('challenge')" class="px-2.5 py-1.5 sm:px-3 rounded-md transition-all bg-white text-indigo-700 shadow">
+                        <i class="fa-solid fa-stopwatch mr-1"></i>3分鐘限時戰
+                    </button>
+                    <button id="mode-practice" onclick="setMode('practice')" class="px-2.5 py-1.5 sm:px-3 rounded-md text-indigo-100 hover:text-white transition-all">
+                        <i class="fa-solid fa-brain mr-1"></i>自由思考模式
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- Timer Badge -->
+                    <div id="timer-badge" class="bg-amber-500 text-slate-900 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg font-mono font-bold text-base sm:text-lg flex items-center shadow">
+                        <i class="fa-regular fa-clock mr-1"></i><span id="timer-display">03:00</span>
+                    </div>
+
+                    <!-- Reset / New Game -->
+                    <button onclick="resetPuzzle()" class="bg-white/10 hover:bg-white/20 active:bg-white/30 text-white px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-medium transition-all flex items-center border border-white/20 shrink-0">
+                        <i class="fa-solid fa-rotate-right mr-1"></i>重置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-grow w-full">
+        <!-- Subheader & Instructions -->
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-3.5 sm:p-4 rounded-r-lg shadow-sm mb-4 sm:mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
+            <div class="space-y-1">
+                <h2 class="text-xs sm:text-sm font-bold text-amber-900 flex items-center">
+                    <i class="fa-solid fa-lightbulb text-amber-600 mr-2 text-sm sm:text-base shrink-0"></i>【排序任務】請將 8 個打亂的特教教案區塊標題，依正確撰寫邏輯排列至第 1 至第 8 順位！
+                </h2>
+                <p class="text-[11px] sm:text-xs text-amber-800">
+                    💡 <span class="font-bold">電腦版：</span>可直接拖曳標題卡。｜ 📱 <span class="font-bold">手機平板：</span>點擊標題卡後，再點擊右側或下方的目標順位欄即可放鬆放置！
+                </p>
+            </div>
+            <div class="w-full lg:w-auto flex justify-end">
+                <button onclick="checkAnswers()" class="w-full sm:w-auto justify-center bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center whitespace-nowrap animate-bounce">
+                    <i class="fa-solid fa-circle-check mr-2"></i>送出檢查答案
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Grid Layout (Mobile: Stacked Vertical, Desktop LG: 12 Cols Side-by-Side) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
+
+            <!-- Pool Column (5 cols on LG) -->
+            <div class="lg:col-span-5 flex flex-col">
+                <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col h-full">
+                    <div class="bg-slate-100 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span>
+                            <h3 class="font-bold text-slate-800 text-xs sm:text-sm">待排序的標題卡 (<span id="pool-count">8</span>/8)</h3>
+                        </div>
+                        <span class="text-[11px] text-slate-500">點擊選取或拖曳卡片</span>
+                    </div>
+
+                    <div id="cards-pool" class="p-3 sm:p-4 space-y-2.5 custom-scrollbar overflow-y-auto max-h-[380px] lg:max-h-[680px] min-h-[220px] flex-grow bg-slate-50/50">
+                        <!-- Cards will be dynamically rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drop Zones Column (7 cols on LG) -->
+            <div class="lg:col-span-7">
+                <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                    <div class="bg-indigo-50 px-3.5 py-2.5 border-b border-indigo-100 flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-arrow-down-1-9 text-indigo-600 text-sm sm:text-base"></i>
+                            <h3 class="font-bold text-indigo-900 text-xs sm:text-sm">特教教案標準撰寫邏輯順序 (第 1 ~ 8 順位)</h3>
+                        </div>
+                        <span class="text-[10px] sm:text-xs font-semibold bg-indigo-200 text-indigo-800 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">第 1 ➔ 第 8 順位</span>
+                    </div>
+
+                    <div id="drop-zones-container" class="p-3 sm:p-4 space-y-2.5">
+                        <!-- 8 Drop Zones (Sequence 1~8) rendered via JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal: Results & Detailed Feedback -->
+    <div id="result-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <!-- Modal Header -->
+            <div id="modal-header-bg" class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-6 relative">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-white/80 hover:text-white bg-black/10 hover:bg-black/20 w-8 h-8 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="flex items-center space-x-3">
+                    <div id="modal-icon" class="text-4xl text-amber-300">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h2 id="modal-title" class="text-2xl font-black">排序檢查完成！</h2>
+                        <p id="modal-subtitle" class="text-indigo-100 text-xs mt-1">特教教案架構邏輯診斷報告</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Content (Scrollable) -->
+            <div class="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-grow">
+                <!-- Score Cards Grid -->
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="text-xs text-slate-500 font-medium mb-1">順序正確率</div>
+                        <div id="score-accuracy" class="text-2xl font-black text-indigo-600">100%</div>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="text-xs text-slate-500 font-medium mb-1">完成時間</div>
+                        <div id="score-time" class="text-2xl font-black text-emerald-600">01:15</div>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="text-xs text-slate-500 font-medium mb-1">獲得稱號</div>
+                        <div id="score-rank" class="text-sm font-bold text-amber-600 mt-2">特教教案大師</div>
+                    </div>
+                </div>
+
+                <!-- Breakdown Itemized Diagnosis -->
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center">
+                        <i class="fa-solid fa-list-check text-indigo-600 mr-2"></i>各順位配對診斷與架構解析
+                    </h3>
+                    <div id="diagnostic-list" class="space-y-2">
+                        <!-- Diagnostic items rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Pedagogical Tip Box -->
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                    <h4 class="font-bold text-indigo-900 text-xs flex items-center mb-1">
+                        <i class="fa-solid fa-graduation-cap mr-1.5 text-indigo-600"></i>特教教案邏輯心法：
+                    </h4>
+                    <p class="text-xs text-indigo-800 leading-relaxed">
+                        標準特教教案撰寫的核心邏輯為<span class="font-bold text-indigo-950">「學習者需求與目標導向」</span>：由『基本資料與理念』出發 ➔ 評估『學生能力起點』 ➔ 連結『核心素養與學習重點』 ➔ 依需求進行『課程調整』 ➔ 擬定具體『學習目標』 ➔ 最後設計『教學活動』。
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <button onclick="toggleMasterLessonModal()" class="w-full sm:w-auto text-indigo-600 hover:text-indigo-800 text-xs font-bold py-2 px-3 flex items-center justify-center border border-indigo-200 rounded-lg bg-indigo-50/50 hover:bg-indigo-100 transition-colors">
+                    <i class="fa-solid fa-book-bookmark mr-1.5"></i>查看 8 大元素實質內涵總覽
+                </button>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button onclick="closeModal()" class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition-all">
+                        返回微調順序
+                    </button>
+                    <button onclick="resetPuzzle(); closeModal();" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-xs font-bold transition-all shadow">
+                        重新挑戰
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Master Lesson Plan Full View / Substantive Implications -->
+    <div id="master-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="bg-slate-800 text-white p-5 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-yellow-400 text-xl"></i>
+                    <h3 class="text-lg font-bold">【架構對照】特教教案 8 大元素之實質內涵解析</h3>
+                </div>
+                <button onclick="toggleMasterLessonModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-4 text-sm text-slate-700">
+                <div id="master-lesson-content" class="space-y-3">
+                    <!-- Dynamic content generated via JS -->
+                </div>
+            </div>
+            <div class="bg-slate-100 px-6 py-3 text-right border-t border-slate-200">
+                <button onclick="toggleMasterLessonModal()" class="bg-slate-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold">
+                    關閉瀏覽
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-100 border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>國立清華大學 特殊教育學系《身心障礙教材教法與教案撰寫》微型互動教具 © 2026</p>
+    </footer>
+
+    <script>
+        // Standard Lesson Plan Sequence Definition with exact Substantive Meanings (實質內涵)
+        const CORRECT_SEQUENCE = [
+            {
+                step: 1,
+                correctTitle: "基本資料",
+                icon: "fa-address-card",
+                tag: "基礎背景",
+                meaning: "對課程內容有基本的了解"
+            },
+            {
+                step: 2,
+                correctTitle: "設計理念",
+                icon: "fa-compass",
+                tag: "理論核心",
+                meaning: "大概知道學生的情形、教材內容、教學法"
+            },
+            {
+                step: 3,
+                correctTitle: "學生能力描述",
+                icon: "fa-user-check",
+                tag: "起點行為",
+                meaning: "一般能力的優弱勢、領域能力的障礙、因應的個別課程調整"
+            },
+            {
+                step: 4,
+                correctTitle: "核心素養",
+                icon: "fa-shapes",
+                tag: "課綱指引",
+                meaning: "特殊需求學生適應一般課程所需的調整與核心素養指引"
+            },
+            {
+                step: 5,
+                correctTitle: "學習重點",
+                icon: "fa-bullseye",
+                tag: "學習標準",
+                meaning: "特殊需求學生適應一般課程之學習表現與學習內容重點"
+            },
+            {
+                step: 6,
+                correctTitle: "課程調整",
+                icon: "fa-sliders",
+                tag: "特教靈魂",
+                meaning: "特殊需求學生適應一般課程所需的調整、小組課程調整"
+            },
+            {
+                step: 7,
+                correctTitle: "學習目標",
+                icon: "fa-flag-checkered",
+                tag: "具體三維",
+                meaning: "小組及個人學習目標"
+            },
+            {
+                step: 8,
+                correctTitle: "教學活動設計",
+                icon: "fa-chalkboard-user",
+                tag: "實施歷程",
+                meaning: "課程活動流程"
+            }
+        ];
+
+        // Titles to be scrambled (ONLY Title & Icon, NO content summary)
+        const TITLE_CARDS = CORRECT_SEQUENCE.map(item => ({
+            id: `card-${item.step}`,
+            title: item.correctTitle,
+            icon: item.icon,
+            tag: item.tag
+        }));
+
+        let gameState = {
+            mode: 'challenge', // 'challenge' or 'practice'
+            placedCards: {},   // { stepNumber: cardObject }
+            selectedCardId: null,
+            timerInterval: null,
+            secondsLeft: 180,
+            startTime: null,
+            isFinished: false
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initPuzzle();
+        });
+
+        // Initialize or Reset the Game
+        function initPuzzle() {
+            gameState.placedCards = {};
+            gameState.selectedCardId = null;
+            gameState.isFinished = false;
+            clearInterval(gameState.timerInterval);
+
+            // Scramble the title cards randomly
+            const shuffledCards = [...TITLE_CARDS].sort(() => Math.random() - 0.5);
+
+            renderPool(shuffledCards);
+            renderDropZones();
+            updatePoolCount();
+
+            // Set up timer if challenge mode
+            if (gameState.mode === 'challenge') {
+                gameState.secondsLeft = 180;
+                updateTimerDisplay();
+                startTimer();
+            } else {
+                document.getElementById('timer-display').innerText = "無限制";
+            }
+        }
+
+        // Render Pool of Scrambled Title Cards
+        function renderPool(cards) {
+            const poolEl = document.getElementById('cards-pool');
+            poolEl.innerHTML = '';
+
+            cards.forEach(card => {
+                // If card is already placed in a slot, skip rendering in pool
+                const isPlaced = Object.values(gameState.placedCards).some(c => c && c.id === card.id);
+                if (isPlaced) return;
+
+                const isSelected = gameState.selectedCardId === card.id;
+
+                const cardEl = document.createElement('div');
+                cardEl.id = card.id;
+                cardEl.draggable = true;
+                cardEl.className = `p-3 sm:p-3.5 bg-white rounded-xl border shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing transition-all flex items-center justify-between group ${
+                    isSelected 
+                        ? 'border-indigo-600 bg-indigo-50/90 ring-2 ring-indigo-500 shadow-md' 
+                        : 'border-slate-200 hover:border-indigo-400'
+                }`;
+
+                cardEl.innerHTML = `
+                    <div class="flex items-center space-x-2.5 sm:space-x-3">
+                        <i class="fa-solid fa-grip-vertical text-slate-300 group-hover:text-indigo-400 text-sm"></i>
+                        <div class="p-2 ${isSelected ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-600'} rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors shrink-0">
+                            <i class="fa-solid ${card.icon} text-base sm:text-lg"></i>
+                        </div>
+                        <span class="font-bold text-slate-800 text-xs sm:text-base">${card.title}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[10px] sm:text-xs bg-slate-100 text-slate-600 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full font-medium group-hover:bg-indigo-100 group-hover:text-indigo-800">${card.tag}</span>
+                        ${isSelected ? '<span class="text-[11px] font-bold text-indigo-600 animate-pulse hidden sm:inline"><i class="fa-solid fa-hand-pointer mr-0.5"></i>已選取</span>' : ''}
+                    </div>
+                `;
+
+                // Event Listeners for Drag & Tap
+                cardEl.addEventListener('dragstart', (e) => handleDragStart(e, card));
+                cardEl.addEventListener('click', () => handleCardTap(card.id));
+
+                poolEl.appendChild(cardEl);
+            });
+
+            if (poolEl.children.length === 0) {
+                poolEl.innerHTML = `
+                    <div class="text-center py-8 sm:py-12 text-slate-400 text-xs">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-3xl sm:text-4xl mb-2 block"></i>
+                        所有區塊標題已全部放入順序欄中！<br>請點擊上方「送出檢查答案」。
+                    </div>
+                `;
+            }
+        }
+
+        // Render 8 Sequence Drop Zones (1 ~ 8)
+        function renderDropZones() {
+            const container = document.getElementById('drop-zones-container');
+            container.innerHTML = '';
+
+            for (let step = 1; step <= 8; step++) {
+                const placedCard = gameState.placedCards[step];
+
+                const zoneEl = document.createElement('div');
+                zoneEl.className = `p-2.5 sm:p-3 rounded-xl border-2 border-dashed transition-all flex items-center justify-between min-h-[56px] sm:min-h-[60px] ${
+                    placedCard 
+                        ? 'border-indigo-300 bg-white shadow-sm' 
+                        : gameState.selectedCardId 
+                            ? 'border-indigo-400 bg-indigo-50/40 hover:bg-indigo-100/60 cursor-pointer animate-pulse' 
+                            : 'border-slate-200 bg-slate-50/70 hover:border-indigo-300'
+                }`;
+
+                zoneEl.dataset.step = step;
+
+                if (placedCard) {
+                    zoneEl.innerHTML = `
+                        <div class="flex items-center space-x-2.5 sm:space-x-3">
+                            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-indigo-600 text-white font-mono font-bold text-xs flex items-center justify-center shadow-sm shrink-0">
+                                ${step}
+                            </span>
+                            <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg shrink-0">
+                                <i class="fa-solid ${placedCard.icon} text-sm sm:text-base"></i>
+                            </div>
+                            <span class="font-bold text-slate-800 text-xs sm:text-sm">${placedCard.title}</span>
+                        </div>
+                        <button onclick="removePlacedCard(${step})" class="text-xs text-rose-500 hover:text-rose-700 font-bold px-2 py-1 hover:bg-rose-50 rounded-lg transition-colors shrink-0">
+                            <i class="fa-solid fa-xmark mr-0.5 sm:mr-1"></i>移除
+                        </button>
+                    `;
+                } else {
+                    zoneEl.innerHTML = `
+                        <div class="flex items-center space-x-2.5 sm:space-x-3 text-slate-400">
+                            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-200 text-slate-600 font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                                ${step}
+                            </span>
+                            <span class="text-xs font-semibold text-slate-500">第 ${step} 順位</span>
+                        </div>
+                        <span class="text-[11px] sm:text-xs text-slate-400 italic flex items-center">
+                            <i class="fa-regular fa-square-plus mr-1"></i>${gameState.selectedCardId ? '點擊放置於此' : '拖曳或點擊放置'}
+                        </span>
+                    `;
+                }
+
+                // Drag and Drop Events
+                zoneEl.addEventListener('dragover', handleDragOver);
+                zoneEl.addEventListener('dragleave', handleDragLeave);
+                zoneEl.addEventListener('drop', (e) => handleDrop(e, step));
+                zoneEl.addEventListener('click', () => handleZoneTap(step));
+
+                container.appendChild(zoneEl);
+            }
+        }
+
+        // Drag Handlers
+        function handleDragStart(e, card) {
+            e.dataTransfer.setData('text/plain', JSON.stringify(card));
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e, step) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+
+            const cardDataRaw = e.dataTransfer.getData('text/plain');
+            if (!cardDataRaw) return;
+
+            const card = JSON.parse(cardDataRaw);
+            placeCardInSlot(card, step);
+        }
+
+        // Tap/Click Selection Handlers
+        function handleCardTap(cardId) {
+            if (gameState.selectedCardId === cardId) {
+                gameState.selectedCardId = null; // Toggle unselect
+            } else {
+                gameState.selectedCardId = cardId;
+            }
+            refreshViews();
+        }
+
+        function handleZoneTap(step) {
+            if (!gameState.selectedCardId) return;
+
+            const card = TITLE_CARDS.find(c => c.id === gameState.selectedCardId);
+            if (card) {
+                placeCardInSlot(card, step);
+                gameState.selectedCardId = null;
+            }
+        }
+
+        // Place card logic
+        function placeCardInSlot(card, step) {
+            gameState.placedCards[step] = card;
+            refreshViews();
+        }
+
+        // Remove placed card from slot
+        function removePlacedCard(step) {
+            delete gameState.placedCards[step];
+            refreshViews();
+        }
+
+        function refreshViews() {
+            renderPool(TITLE_CARDS);
+            renderDropZones();
+            updatePoolCount();
+        }
+
+        function updatePoolCount() {
+            const placedCount = Object.keys(gameState.placedCards).length;
+            const remaining = 8 - placedCount;
+            document.getElementById('pool-count').innerText = remaining;
+        }
+
+        function setMode(mode) {
+            gameState.mode = mode;
+            document.getElementById('mode-challenge').className = mode === 'challenge' 
+                ? 'px-3 py-1.5 rounded-md transition-all bg-white text-indigo-700 shadow font-bold'
+                : 'px-3 py-1.5 rounded-md text-indigo-100 hover:text-white transition-all';
+
+            document.getElementById('mode-practice').className = mode === 'practice' 
+                ? 'px-3 py-1.5 rounded-md transition-all bg-white text-indigo-700 shadow font-bold'
+                : 'px-3 py-1.5 rounded-md text-indigo-100 hover:text-white transition-all';
+
+            resetPuzzle();
+        }
+
+        function startTimer() {
+            gameState.startTime = Date.now();
+            gameState.timerInterval = setInterval(() => {
+                gameState.secondsLeft--;
+                updateTimerDisplay();
+
+                if (gameState.secondsLeft <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    checkAnswers(true); // Timeout auto-submit
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(gameState.secondsLeft / 60);
+            const secs = gameState.secondsLeft % 60;
+            const display = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = display;
+        }
+
+        function resetPuzzle() {
+            initPuzzle();
+        }
+
+        function checkAnswers(isTimeout = false) {
+            clearInterval(gameState.timerInterval);
+            gameState.isFinished = true;
+
+            let correctCount = 0;
+            const diagnosticList = [];
+
+            CORRECT_SEQUENCE.forEach(seqItem => {
+                const placed = gameState.placedCards[seqItem.step];
+                const isCorrect = placed && placed.title === seqItem.correctTitle;
+
+                if (isCorrect) correctCount++;
+
+                diagnosticList.push({
+                    step: seqItem.step,
+                    correctTitle: seqItem.correctTitle,
+                    placedTitle: placed ? placed.title : "未放置標題",
+                    isCorrect: isCorrect,
+                    meaning: seqItem.meaning
+                });
+            });
+
+            const accuracy = Math.round((correctCount / 8) * 100);
+            const timeElapsed = 180 - gameState.secondsLeft;
+            const mins = Math.floor(timeElapsed / 60);
+            const secs = timeElapsed % 60;
+            const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+            // Render Results Modal
+            document.getElementById('score-accuracy').innerText = `${accuracy}%`;
+            document.getElementById('score-accuracy').className = accuracy === 100 
+                ? 'text-2xl font-black text-emerald-600' 
+                : accuracy >= 60 ? 'text-2xl font-black text-indigo-600' : 'text-2xl font-black text-rose-600';
+
+            document.getElementById('score-time').innerText = gameState.mode === 'challenge' ? timeStr : '自由模式';
+
+            // Title Rank
+            let rank = "特教實習生";
+            if (accuracy === 100) rank = "🏆 特教教案大師";
+            else if (accuracy >= 75) rank = "🌟 優秀特教老師";
+            else if (accuracy >= 50) rank = "📚 教案新手學習者";
+            document.getElementById('score-rank').innerText = rank;
+
+            // Render Diagnostic items with exact Substantive Meanings
+            const diagListContainer = document.getElementById('diagnostic-list');
+            diagListContainer.innerHTML = '';
+
+            diagnosticList.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = `p-3.5 rounded-xl border text-xs flex flex-col space-y-1.5 ${
+                    item.isCorrect ? 'bg-emerald-50/80 border-emerald-200' : 'bg-rose-50/80 border-rose-200'
+                }`;
+
+                itemEl.innerHTML = `
+                    <div class="flex justify-between items-center font-bold">
+                        <span class="text-slate-800 text-sm">第 ${item.step} 順位：正確應為【${item.correctTitle}】</span>
+                        <span class="${item.isCorrect ? 'text-emerald-700' : 'text-rose-600'}">
+                            ${item.isCorrect ? '<i class="fa-solid fa-circle-check mr-1"></i>順序正確' : '<i class="fa-solid fa-circle-xmark mr-1"></i>排序錯誤'}
+                        </span>
+                    </div>
+                    <div class="text-slate-600">您的選擇：<span class="font-semibold ${item.isCorrect ? 'text-emerald-800' : 'text-rose-800'}">${item.placedTitle}</span></div>
+                    <div class="text-xs text-indigo-900 bg-white/80 p-2 rounded-lg border border-indigo-100/80 mt-1 font-medium">
+                        💡 <span class="font-bold text-indigo-950">實質內涵：</span>${item.meaning}
+                    </div>
+                `;
+                diagListContainer.appendChild(itemEl);
+            });
+
+            // Show Modal
+            document.getElementById('result-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+        }
+
+        function toggleMasterLessonModal() {
+            const modal = document.getElementById('master-modal');
+            if (modal.classList.contains('hidden')) {
+                renderSubstantiveOverviewContent();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function renderSubstantiveOverviewContent() {
+            const container = document.getElementById('master-lesson-content');
+            container.innerHTML = '';
+
+            CORRECT_SEQUENCE.forEach(seqItem => {
+                const sectionEl = document.createElement('div');
+                sectionEl.className = "p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
+                sectionEl.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-full bg-indigo-600 text-white font-mono font-bold text-sm flex items-center justify-center shrink-0 shadow-sm">
+                            ${seqItem.step}
+                        </span>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid ${seqItem.icon} text-indigo-600"></i>
+                                <h4 class="font-bold text-slate-800 text-base">${seqItem.correctTitle}</h4>
+                                <span class="text-[11px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">${seqItem.tag}</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">
+                                <span class="font-bold text-indigo-900">實質內涵：</span>${seqItem.meaning}
+                            </p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(sectionEl);
+            });
+        }
+    </script>
+</body>
+</html>
